@@ -24,10 +24,10 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // AddSingleton instance is created once
 // AddTransient - new instance is created every time
 // choose one: either EF based or file system based repo
-// builder.Services.AddScoped<IGameRepository<GameConfiguration>, ConfigRepositoryEF>();
-// builder.Services.AddScoped<IGameRepository<GameState>, GameRepositoryEF>();
-builder.Services.AddScoped<IGameRepository<GameConfiguration>, ConfigRepositoryJson>();
-builder.Services.AddScoped<IGameRepository<GameState>, GameRepositoryJson>();
+builder.Services.AddScoped<IGameRepository<GameConfiguration>, ConfigRepositoryEF>();
+builder.Services.AddScoped<IGameRepository<GameState>, GameRepositoryEF>();
+// builder.Services.AddScoped<IGameRepository<GameConfiguration>, ConfigRepositoryJson>();
+// builder.Services.AddScoped<IGameRepository<GameState>, GameRepositoryJson>();
 
 // Add session support
 builder.Services.AddDistributedMemoryCache();

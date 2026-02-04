@@ -1,6 +1,6 @@
 ﻿using ConsoleApp;
 
-GameMenu.Init(useDatabase: false);
+GameMenu.Init(useDatabase: true);
 
 var menu = GameMenu.MainMenu(); // Menu configuration is in GameMenu.cs
 menu.Run();

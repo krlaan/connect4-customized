@@ -65,7 +65,7 @@ namespace WebApp.Pages_Configs
                     Configs.Add(new ConfigRow
                     {
                         Id = id,
-                        Config =
+                        Config = new Config
                         {
                             Id = gc.Id,
                             ConfigName = gc.Name,
