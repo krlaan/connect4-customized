@@ -1,0 +1,75 @@
+@page
+@model WebApp.Pages_Configs.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="container pt-3 pb-5">
+    <div class="text-center mb-4">
+        <h1 class="display-5 fw-bold">Create Configuration</h1>
+        <p class="text-muted mb-0">Set up board settings and game rules.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-sm-10 col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Config.ConfigName" class="form-label">Config Name</label>
+                            <input asp-for="Config.ConfigName" class="form-control" />
+                            <span asp-validation-for="Config.ConfigName" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Config.BoardWidth" class="form-label">Board Width</label>
+                            <input asp-for="Config.BoardWidth" class="form-control" />
+                            <span asp-validation-for="Config.BoardWidth" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Config.BoardHeight" class="form-label">Board Height</label>
+                            <input asp-for="Config.BoardHeight" class="form-control" />
+                            <span asp-validation-for="Config.BoardHeight" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Config.WinCondition" class="form-label">Win Condition</label>
+                            <input asp-for="Config.WinCondition" class="form-control" />
+                            <span asp-validation-for="Config.WinCondition" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Config.GameType" class="form-label">Game Type</label>
+                            <select asp-for="Config.GameType" asp-items="ViewBag.GameTypeList" class="form-select"></select>
+                            <span asp-validation-for="Config.GameType" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Config.AiDifficulty" class="form-label">AI Difficulty</label>
+                            <select asp-for="Config.AiDifficulty" asp-items="ViewBag.AiDifficultyList" class="form-select"></select>
+                            <span asp-validation-for="Config.AiDifficulty" class="text-danger"></span>
+                        </div>
+                        
+                        @if (Model.UserId.HasValue) { <input type="hidden" name="userId" value="@Model.UserId.Value" /> }
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-3">
+        <a asp-page="Index">Back to List</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

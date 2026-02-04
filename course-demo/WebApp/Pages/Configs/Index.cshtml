@@ -1,0 +1,56 @@
+@page
+@model WebApp.Pages_Configs.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1 class="text-center my-4">Configurations</h1>
+
+<div class="d-flex justify-content-center mb-4">
+    <a asp-page="Create" asp-route-userId="@Model.UserId" class="btn btn-primary">Create New Config</a>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-sm align-middle">
+    <thead>
+        <tr>
+            <th class="text-muted">Config Name</th>
+            <th class="text-muted">Board Width</th>
+            <th class="text-muted">Board Height</th>
+            <th class="text-muted">Win Condition</th>
+            <th class="text-muted">Game Type</th>
+            <th class="text-muted">AI Difficulty</th>
+            <th class="text-muted"></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Configs) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Config.ConfigName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Config.BoardWidth)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Config.BoardHeight)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Config.WinCondition)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Config.GameTypeDisplayName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Config.AiDifficultyDisplayName)
+            </td>
+            <td class="text-nowrap">
+                <a class="btn btn-outline-secondary btn-sm" asp-page="./Edit" asp-route-id="@item.Id" asp-route-userId="@Model.UserId">Edit</a>
+                <a class="btn btn-outline-secondary btn-sm ms-2" asp-page="./Details" asp-route-id="@item.Id" asp-route-userId="@Model.UserId">Details</a>
+                <a class="btn btn-outline-danger btn-sm ms-2" asp-page="./Delete" asp-route-id="@item.Id" asp-route-userId="@Model.UserId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+</div>

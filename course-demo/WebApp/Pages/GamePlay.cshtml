@@ -1,0 +1,274 @@
+@page
+@using BLL
+@model WebApp.Pages.GamePlay
+<div class="text-center mb-4">
+    <h1 class="display-5 fw-bold">@Model.GameName</h1>
+    <p class="text-muted mb-0">Best Game Forever!</p>
+</div>
+<div class="row justify-content-center">
+    <div class="col-md-8 mx-auto">
+        <div class="text-center mb-3">
+            <div class="matchup d-flex justify-content-center align-items-center gap-3 flex-wrap">
+                <span class="pill pill-x">@Model.GameBrain.Player1Name @(Model.GameBrain.Player1Type == EPlayerType.Ai ? "🤖" : "")</span>
+                <span class="vs">vs</span>
+                <span class="pill pill-o">@Model.GameBrain.Player2Name @(Model.GameBrain.Player2Type == EPlayerType.Ai ? "🤖" : "")</span>
+            </div>
+            @if (Model.Winner != ECellState.Empty)
+            {
+                <div class="winner-message mt-3">
+                    <h4>@Model.WinnerMessage</h4>
+                </div>
+            }
+            else
+            {
+                <div class="next-move mt-2">Next Player: @(Model.GameBrain.IsNextPlayerX() ? Model.GameBrain.Player1Name : Model.GameBrain.Player2Name)</div>
+            }
+        </div>
+        @if (Model.IsMultiPlayer)
+        {
+            <div class="text-center mb-2">
+                <div class="btn-group" role="group" aria-label="seat">
+                    <a class="btn btn-sm btn-outline-secondary" asp-page="/GamePlay" asp-route-gameId="@Model.GameId" asp-route-seat="p1" asp-route-userId="@Model.UserId">I am Player 1</a>
+                    <a class="btn btn-sm btn-outline-secondary" asp-page="/GamePlay" asp-route-gameId="@Model.GameId" asp-route-seat="p2" asp-route-userId="@Model.UserId">I am Player 2</a>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.Seat))
+                {
+                    <div class="mt-2 small text-muted">Seat: @(Model.Seat == "p1" ? Model.GameBrain.Player1Name : Model.GameBrain.Player2Name). @(Model.CanMove ? "Your turn." : "Wait for opponent.")</div>
+                }
+            </div>
+        }
+        <table class="connect4-board mx-auto">
+            <tr>
+                @for (int x = 0; x < Model.GameBrain.GetBoard().GetLength(0); x++)
+                {
+                    <th class="column-header">@GetNumberRepresentation(x + 1)</th>
+                }
+            </tr>
+
+            @for (int y = 0; y < Model.GameBrain.GetBoard().GetLength(1); y++)
+            {
+                <tr>
+                    @for (var x = 0; x < Model.GameBrain.GetBoard().GetLength(0); x++)
+                    {
+                        var cellState = Model.GameBrain.GetBoard()[x, y];
+                        var isWinCell = cellState == ECellState.XWin || cellState == ECellState.OWin;
+                        var clickable = Model.Winner == ECellState.Empty && Model.CanMove ? "clickable" : "";
+                        var isCurrentMove = Model.CurrentMoveX == x && Model.CurrentMoveY == y;
+                        <td class="@clickable" onclick="@(Model.Winner == ECellState.Empty ? $"redirectToPage({x})" : "")">
+                            <div class="cell @GetCellCss(cellState) @(isWinCell ? "win-cell" : "") @(isCurrentMove && cellState != ECellState.Empty ? "drop-animation" : "")"></div>
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+        <div class="text-center mt-3">
+            @if (Model.Winner != ECellState.Empty)
+            {
+                <form method="post" asp-page-handler="DeleteFinishedGame" class="d-inline">
+                    <input type="hidden" name="gameId" value="@Model.GameId" />
+                    <input type="hidden" name="redirectTo" value="gamelist" />
+                    @if (Model.UserId.HasValue) { <input type="hidden" name="userId" value="@Model.UserId.Value" /> }
+                    <button type="submit" class="btn btn-success me-2">Exit to Games List</button>
+                </form>
+                <form method="post" asp-page-handler="DeleteFinishedGame" class="d-inline">
+                    <input type="hidden" name="gameId" value="@Model.GameId" />
+                    <input type="hidden" name="redirectTo" value="newgame" />
+                    <button type="submit" class="btn btn-primary">New Game</button>
+                </form>
+            }
+            else
+            {
+                @if (Model.IsAiTurn)
+                {
+                    <button class="btn btn-primary me-2" onclick="makeAiMove()">🤖 Next AI Move</button>
+                }
+                @if (Model.UserId.HasValue)
+                {
+                    <a class="btn btn-outline-secondary" asp-page="/Games/Index" asp-route-userId="@Model.UserId.Value">Save and Exit</a>
+                }
+                else
+                {
+                    <a class="btn btn-outline-secondary" asp-page="/Games/Index">Save and Exit</a>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to redirect to another page
+    function redirectToPage(x) {
+        let userId = "@(Model.UserId.HasValue ? Model.UserId.Value.ToString() : "")";
+        let seat = "@Model.Seat";
+        let url = "?gameId=@Uri.EscapeDataString(Model.GameId)&x=" + x;
+        if (userId) {
+            url += "&userId=" + userId;
+        }
+        if (seat) {
+            url += "&seat=" + seat;
+        }
+        window.location.href = url;
+    }
+    
+    // Function to trigger AI move
+    function makeAiMove() {
+        let userId = "@(Model.UserId.HasValue ? Model.UserId.Value.ToString() : "")";
+        let seat = "@Model.Seat";
+        let url = "?gameId=@Uri.EscapeDataString(Model.GameId)&x=0";
+        if (userId) {
+            url += "&userId=" + userId;
+        }
+        if (seat) {
+            url += "&seat=" + seat;
+        }
+        window.location.href = url;
+    }
+</script>
+
+@functions
+{
+    private static string GetCellCss(ECellState cell) =>
+        cell switch
+        {
+            ECellState.X => "x",
+            ECellState.O => "o",
+            ECellState.XWin => "xwin",
+            ECellState.OWin => "owin",
+            _ => ""
+        };
+
+    private static string GetNumberRepresentation(int number)
+    {
+        return number.ToString();
+    }
+}
+
+<style>
+    .connect4-board {
+        border-spacing: 12px;
+        background-color: burlywood;
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .connect4-board td {
+        width: 70px;
+        height: 70px;
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    .cell {
+        width: 100%;
+        height: 100%;
+        border-radius: 90%;
+        background-color: white;
+        box-shadow: inset 0 4px 8px rgba(0,0,0,0.3);
+        transition: transform 0.15s ease;
+    }
+
+    .cell:hover {
+        transform: scale(1.05);
+    }
+
+    .cell.x {
+        background-color: #ff5c5c;
+    }
+
+    .cell.o {
+        background-color: #4dabf7;
+    }
+    
+    .cell.xwin {
+        background-color: #ff5c5c;
+        animation: pulse 0.5s ease-in-out infinite alternate;
+    }
+    
+    .cell.owin {
+        background-color: #4dabf7;
+        animation: pulse 0.5s ease-in-out infinite alternate;
+    }
+    
+    .win-cell {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), inset 0 4px 8px rgba(0,0,0,0.3);
+    }
+    
+    @@keyframes dropPiece {
+        0% {
+            transform: translateY(-500px);
+            opacity: 0;
+        }
+        10% {
+            opacity: 1;
+        }
+        90% {
+            transform: translateY(0);
+        }
+        95% {
+            transform: translateY(-10px);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+    
+    .drop-animation {
+        animation: dropPiece 0.6s ease-out;
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .pill-x { 
+        background: #ff5c5c; 
+    }
+    .pill-o {
+        background: #4dabf7;
+    }
+
+    .vs {
+        font-weight: 700;
+        color: #4b5563;
+        letter-spacing: 0.02em;
+    }
+
+    .next-move {
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .column-header {
+        color: white;
+        font-weight: bold;
+        text-align: center;
+    }
+    
+    .winner-message {
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 8px;
+        color: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        animation: slideDown 0.5s ease-out;
+    }
+    
+    .winner-message h4 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+    
+    td.clickable {
+        cursor: pointer;
+    }
+    
+    td:not(.clickable) {
+        cursor: default;
+    }
+</style>

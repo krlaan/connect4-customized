@@ -1,0 +1,46 @@
+@page
+@model WebApp.Pages_Configs.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="container pt-3 pb-5">
+    <div class="text-center mb-4">
+        <h1 class="display-5 fw-bold">@Model.Config.ConfigName</h1>
+        <p class="text-muted mb-0">Configuration Details</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-sm-10 col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <dl class="row mb-4">
+                        <dt class="col-sm-5 fw-bold text-muted">Config Name</dt>
+                        <dd class="col-sm-7 mb-3">@Html.DisplayFor(model => model.Config.ConfigName)</dd>
+                        
+                        <dt class="col-sm-5 fw-bold text-muted">Board Width</dt>
+                        <dd class="col-sm-7 mb-3">@Html.DisplayFor(model => model.Config.BoardWidth)</dd>
+                        
+                        <dt class="col-sm-5 fw-bold text-muted">Board Height</dt>
+                        <dd class="col-sm-7 mb-3">@Html.DisplayFor(model => model.Config.BoardHeight)</dd>
+                        
+                        <dt class="col-sm-5 fw-bold text-muted">Win Condition</dt>
+                        <dd class="col-sm-7 mb-3">@Html.DisplayFor(model => model.Config.WinCondition)</dd>
+                        
+                        <dt class="col-sm-5 fw-bold text-muted">Game Type</dt>
+                        <dd class="col-sm-7 mb-3">@Model.Config.GameTypeDisplayName</dd>
+                        
+                        <dt class="col-sm-5 fw-bold text-muted">AI Difficulty</dt>
+                        <dd class="col-sm-7 mb-0">@Model.Config.AiDifficultyDisplayName</dd>
+                    </dl>
+                    
+                    <div class="d-flex gap-2 justify-content-center">
+                        <a asp-page="./Edit" asp-route-id="@Model.ConfigId" asp-route-userId="@Model.UserId" class="btn btn-primary flex-grow-1">Edit</a>
+                        <a asp-page="./Index" asp-route-userId="@Model.UserId" class="btn btn-outline-secondary flex-grow-1">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
