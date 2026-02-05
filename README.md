@@ -24,7 +24,6 @@ This project implements Connect4 with extended and customizable rules, allowing 
 
 For detailed game rules and examples, see:
 - [Math is Fun - Connect4 Game](https://www.mathsisfun.com/games/connect-crazy.html)
-- [Hasbro Official Instructions](https://instructions.hasbro.com/en-my/instruction/connect-4-game)
 - [WikiHow - How to Play Connect4](https://www.wikihow.com/Play-Connect-4)
 
 ### Extended Rules
